@@ -1,0 +1,53 @@
+# GitHub Actions工作流配置文件
+
+# 定义工作流名称
+name: reptile
+
+# 定义触发规则
+on:
+  # push时触发工作流
+  push:
+  # 定时触发工作流
+  schedule:
+    # 每天早上北京时间6点触发
+    - cron: '0 22 * * *'
+
+# 定义一个作业
+jobs:
+  # 定义一个名为“build”的作业
+  build:
+    # 设置运行此作业的容器操作系统类型为Linux
+    runs-on: ubuntu-latest
+
+    # 定义作业的每一项步骤
+    steps:
+      # 设置虚拟环境时区
+      - name: Set timezone
+        run: |
+          sudo timedatectl set-timezone Asia/Shanghai
+          echo "Timezone set to Asia/Shanghai"
+
+      # 复制本仓库到虚拟机
+      - uses: actions/checkout@v4
+
+      # 运行shell命令
+      - name: Run a one-line script
+        run: |
+          echo "Hello world!"
+          ls -l > ./f.txt
+
+      # 配置 Git 用户
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      # 提交并推送更改
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Automated commit from GitHub Actions"
+          git push
+        env:
+          # 提供访问令牌来进行推送
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
