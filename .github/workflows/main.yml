@@ -35,8 +35,8 @@ jobs:
         run: |
           echo "Hello world!"
           echo "你好 世界"
-          ls -l > ./f.txt
-          echo "你好" >> ./f.txt
+          rm ./f.txt
+          python3 ./log.py
 
       # 配置 Git 用户
       - name: Configure Git
