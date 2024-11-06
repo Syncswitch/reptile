@@ -35,6 +35,7 @@ jobs:
         run: |
           echo "Hello world!"
           ls -l > ./f.txt
+          echo "你好" >> ./f.txt
 
       # 配置 Git 用户
       - name: Configure Git
