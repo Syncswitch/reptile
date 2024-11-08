@@ -2,6 +2,7 @@
 
 import logging
 
+# 输出日志到文件
 def logToFile(message):
     # 设置日志文件的路径
     log_file = 'log.txt'
