@@ -35,7 +35,6 @@ jobs:
         run: |
           echo "Hello world!"
           echo "你好 世界"
-          rm ./f.txt
           python3 ./log.py
 
       # 配置 Git 用户
