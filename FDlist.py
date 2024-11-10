@@ -5,7 +5,7 @@ import requests,csv,os,logging
 # 输出日志到文件
 def logToFile(message):
     # 设置日志文件的路径
-    log_file = 'log.txt'
+    log_file = 'FDlist.log'
     # 设置基本配置
     logging.basicConfig(
         filename=log_file,
@@ -137,14 +137,14 @@ def saveToCsv(data):
             reader = csv.DictReader(file) # 读取csv文件数据
             # 循环读取每一行数据
             for row in reader:
-                print(row.get('date'))
-                if row.get('date') == data['date']: # 数据已存在
+                if row.get('日期') == data['date']: # 数据已存在
                     date_exists = True # 跳过写入
                     break
     
     # 如果 date 值已存在则跳过写入
     if date_exists:
-        print(f"数据 {data['date']} 已存在于 {filename} 中，跳过写入。")
+        logToFile(f"{data['name']} 日期为：{data['date']} 的数据已存在于 {filename} 中，跳过写入。") # 打印日志
+        print(f"{data['name']} 日期为：{data['date']} 的数据已存在于 {filename} 中，跳过写入。")
         return
 
     # 写入文件，如果文件不存在则添加表头
@@ -156,15 +156,33 @@ def saveToCsv(data):
         # 按表头顺序写入数据，缺少的字段填入空字符串
         # writer.writerow([data.get(header, '') for header in headers])
         writer.writerow([data.get(header_map.get(header, ''), '') for header in headers])
-
-    print(f"数据已成功追加到 {filename}")
+    # 记录日志
+    logToFile(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 {filename}")
+    print(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 {filename}")
 
 # 主函数
 def main():
-    fd = getFundData('015283')
-    saveToCsv(fd)
-    print(fd)
-
+    file_exists = os.path.isfile('FDlist.csv') # 判断文件是否存在
+    if file_exists:
+        # 如果csv文件从在
+        with open('FDlist.csv', mode='r', newline='', encoding='utf-8') as file: # 打开文件
+            reader = csv.DictReader(file) # 读取csv文件数据
+            # 循环读取每一行数据
+            for row in reader:
+                logToFile(f"正在抓取：({row.get('代码')}){row.get('名称')} 数据...") # 打印日志
+                print(f"正在抓取：({row.get('代码')}){row.get('名称')} 数据...")
+                fd = getFundData(row.get('代码'))
+                if fd is None:
+                    # 抓取失败
+                    logToFile(f"抓取：({row.get('代码')}){row.get('名称')} 数据失败") # 打印日志
+                    print(f"抓取：({row.get('代码')}){row.get('名称')} 数据失败")
+                    print(fd)
+                else:
+                    # 抓取成功
+                    logToFile(f"抓取：({row.get('代码')}){row.get('名称')} 数据成功") # 打印日志
+                    print(f"抓取：({row.get('代码')}){row.get('名称')} 数据成功")
+                    fd['name'] = row.get('名称')
+                    saveToCsv(fd)
 
 # 调用主函数
 if __name__ == "__main__":
