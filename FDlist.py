@@ -117,8 +117,18 @@ def saveToCsv(data):
     headers = ['代码', '名称', '净值', '涨跌', '近1月', '近3月', '近6月', '近1年', '日期'] # 生成csv表头
     # headers = ['code', 'name', 'y', 'e', 'sy_1y', 'sy_3y', 'sy_6y', 'sy_1n', 'date'] # 生成csv表头
     date_exists = False # 初始化写入开关
+    #---目录初始化---
+    # 获取当前脚本所在的目录
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 构造 data 目录的路径
+    data_dir = os.path.join(script_dir, 'data')
+    # 确保 data 目录存在，不存在则创建
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+    # 构造目标文件的路径
+    filename = os.path.join(data_dir, filename)
     file_exists = os.path.isfile(filename) # 判断文件是否存在
-    # 建立英文键与中文表头的映射关系
+    #---建立英文键与中文表头的映射关系---
     header_map = {
         '代码': 'code',
         '名称': 'name',
@@ -143,22 +153,22 @@ def saveToCsv(data):
     
     # 如果 date 值已存在则跳过写入
     if date_exists:
-        logToFile(f"{data['name']} 日期为：{data['date']} 的数据已存在于 {filename} 中，跳过写入。") # 打印日志
-        print(f"{data['name']} 日期为：{data['date']} 的数据已存在于 {filename} 中，跳过写入。")
+        logToFile(f"{data['name']} 日期为：{data['date']} 的数据已存在于 ./data/{data['code']}.csv 中，跳过写入。") # 打印日志
+        print(f"{data['name']} 日期为：{data['date']} 的数据已存在于 ./data/{data['code']}.csv 中，跳过写入。")
         return
 
     # 写入文件，如果文件不存在则添加表头
     with open(filename, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         if not file_exists: #如果csv文件不存在
-            print('csv文件不存在')
+            #print('csv文件不存在')
             writer.writerow(headers) # 写入表头
         # 按表头顺序写入数据，缺少的字段填入空字符串
         # writer.writerow([data.get(header, '') for header in headers])
         writer.writerow([data.get(header_map.get(header, ''), '') for header in headers])
     # 记录日志
-    logToFile(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 {filename}")
-    print(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 {filename}")
+    logToFile(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 ./data/{data['code']}.csv")
+    print(f"{data['name']} 日期为：{data['date']} 的数据已成功追加到 ./data/{data['code']}.csv")
 
 # 主函数
 def main():
