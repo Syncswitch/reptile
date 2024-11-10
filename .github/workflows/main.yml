@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "Hello world!"
           echo "你好 世界"
-          python3 ./log.py
+          python3 ./FDlist.py
 
       # 配置 Git 用户
       - name: Configure Git
